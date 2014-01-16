@@ -6,9 +6,11 @@ set -eo pipefail
 mkdir -p "$1" "$2"
 build=$(cd "$1/" && pwd)
 cache=$(cd "$2/" && pwd)
-ver=${GOVERSION:-1.1.2}
+ver=${GOVERSION:-1.1.1}
 file=${GOFILE:-go$ver.$(uname|tr A-Z a-z)-amd64.tar.gz}
+gcf_file="gcf-$(uname|tr A-Z a-z)-amd64.tgz"
 url=${GOURL:-http://go.googlecode.com/files/$file}
+gcf_url="http://go-cli.s3.amazonaws.com/$gcf_file"
 buildpack=$(dirname $(dirname $0))
 venv=$cache/venv
 
@@ -45,9 +47,25 @@ else
     te=`date +%s`
     echo " done in $(($te-$ts))s"
 fi
+# Download and install GCF if not already installed
+if which -s gcf
+then
+  echo "GCF already installed"
+else
+  rm -rf $cache/gcf
+  mkdir -p $cache/gcf
+  echo "-----> Installing GCF binary from $gcf_url"
+  ts=`date +%s`
+  curl -sO $gcf_url
+  tar -C $cache/gcf -zxf $gcf_file
+  export PATH=$cache/gcf:$PATH
+  rm -f $gcf_file
+  echo "$(gcf)"
+  te=`date +%s`
+  echo " done in $(($te-$ts))s"
+fi
 export GOROOT=$cache/go
 export GOPATH=$build/.cf/go
-
 # Check if Mercurial and Bazaar are installed
 if ! (which hg > /dev/null && which bzr > /dev/null)
 then
@@ -110,6 +128,16 @@ go get -tags cf ./...
 te=`date +%s`
 echo " done in $(($te-$ts))s"
 
+if test -e Cartridge
+then
+  echo -n "-----> Cartridge file detected. Getting and running GoCart"
+  ts=`date +%s`
+  go get github.com/vito/gocart
+  mv /tmp/staged/app/.cf/go/bin/gocart /tmp/cache/go/bin
+  gocart install
+  te=`date +%s`
+  echo " done in $(($te-$ts))s"
+fi
 mkdir -p $build/bin
 mv $GOPATH/bin/* $build/bin
 rm -rf $build/.cf
