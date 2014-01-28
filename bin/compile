@@ -48,7 +48,7 @@ else
     echo " done in $(($te-$ts))s"
 fi
 # Download and install GCF if not already installed
-if which -s gcf
+if which cf
 then
   echo "GCF already installed"
 else
@@ -60,7 +60,6 @@ else
   tar -C $cache/gcf -zxf $gcf_file
   export PATH=$cache/gcf:$PATH
   rm -f $gcf_file
-  echo "gcf actual?: $(cf)"
   te=`date +%s`
   echo " done in $(($te-$ts))s"
 fi
