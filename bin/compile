@@ -8,7 +8,7 @@ build=$(cd "$1/" && pwd)
 cache=$(cd "$2/" && pwd)
 ver=${GOVERSION:-1.1.1}
 file=${GOFILE:-go$ver.$(uname|tr A-Z a-z)-amd64.tar.gz}
-gcf_file="gcf-$(uname|tr A-Z a-z)-amd64.tgz"
+gcf_file="cf-$(uname|tr A-Z a-z)-amd64.tgz"
 url=${GOURL:-http://go.googlecode.com/files/$file}
 gcf_url="http://go-cli.s3.amazonaws.com/$gcf_file"
 buildpack=$(dirname $(dirname $0))
@@ -60,7 +60,7 @@ else
   tar -C $cache/gcf -zxf $gcf_file
   export PATH=$cache/gcf:$PATH
   rm -f $gcf_file
-  echo "$(gcf)"
+  echo "gcf actual?: $(cf)"
   te=`date +%s`
   echo " done in $(($te-$ts))s"
 fi
