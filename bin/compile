@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # usage: bin/compile <build-dir> <cache-dir>
-
+echo "Entering buildpack..."
 set -eo pipefail
 
 mkdir -p "$1" "$2"
 build=$(cd "$1/" && pwd)
 cache=$(cd "$2/" && pwd)
-ver=${GOVERSION:-1.1.1}
+ver=${GOVERSION:-1.2}
 file=${GOFILE:-go$ver.$(uname|tr A-Z a-z)-amd64.tar.gz}
 gcf_file="cf-$(uname|tr A-Z a-z)-amd64.tgz"
 url=${GOURL:-http://go.googlecode.com/files/$file}
@@ -60,6 +60,8 @@ else
   tar -C $cache/gcf -zxf $gcf_file
   export PATH=$cache/gcf:$PATH
   rm -f $gcf_file
+  #Symlink gcf to cf for old experiment libraries
+  ln -s /tmp/cache/gcf/cf /tmp/cache/gcf/gcf
   te=`date +%s`
   echo " done in $(($te-$ts))s"
 fi
@@ -116,10 +118,9 @@ name=$(cat $build/.godir)
 p=$GOPATH/src/$name
 mkdir -p $p
 cp -R $build/* $p
-
 PATH=$GOROOT/bin:$PATH
-
 unset GIT_DIR # unset git dir or it will mess with goinstall
+
 echo -n "-----> Running 'go get -tags cf ./...'..."
 ts=`date +%s`
 cd $p
@@ -133,13 +134,13 @@ then
   ts=`date +%s`
   go get github.com/vito/gocart
   mv /tmp/staged/app/.cf/go/bin/gocart /tmp/cache/go/bin
-  gocart install
+  gocart
   te=`date +%s`
   echo " done in $(($te-$ts))s"
 fi
+
 mkdir -p $build/bin
 mv $GOPATH/bin/* $build/bin
 rm -rf $build/.cf
-
 mkdir -p $build/.profile.d
 echo 'export PATH=$PATH:$HOME/bin' > $build/.profile.d/go.sh
