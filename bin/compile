@@ -65,7 +65,7 @@ else
   te=`date +%s`
   echo $cache/gcf:$PATH
   echo " done in $(($te-$ts))s"
-  echo which cf
+  gcf login -u admin -p admin
 fi
 export GOROOT=$cache/go
 export GOPATH=$build/.cf/go
