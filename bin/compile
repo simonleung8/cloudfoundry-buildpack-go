@@ -63,6 +63,7 @@ else
   #Symlink gcf to cf for old experiment libraries
   ln -s /tmp/cache/gcf/cf /tmp/cache/gcf/gcf
   te=`date +%s`
+  echo $cache/gcf:$PATH
   echo " done in $(($te-$ts))s"
 fi
 export GOROOT=$cache/go
