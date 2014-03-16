@@ -62,7 +62,6 @@ else
   rm -f $gcf_file
   #Symlink gcf to cf for old experiment libraries
   ln -s /tmp/cache/gcf/cf /tmp/cache/gcf/gcf
-  ln -s /usr/bin/cf /tmp/cache/gcf/gcf
   te=`date +%s`
   echo $cache/gcf:$PATH
   echo " done in $(($te-$ts))s"
