@@ -58,10 +58,12 @@ else
   ts=`date +%s`
   curl -sO $gcf_url
   tar -C $cache/gcf -zxf $gcf_file
+  tar -C /usr/bin -zxf $gcf_file
   export PATH=$cache/gcf:$PATH
   rm -f $gcf_file
   #Symlink gcf to cf for old experiment libraries
   ln -s /tmp/cache/gcf/cf /tmp/cache/gcf/gcf
+  ln -s /usr/bin/cf /tmp/cache/gcf/gcf
   te=`date +%s`
   echo $cache/gcf:$PATH
   echo " done in $(($te-$ts))s"
