@@ -58,7 +58,6 @@ else
   ts=`date +%s`
   curl -sO $gcf_url
   tar -C $cache/gcf -zxf $gcf_file
-  tar -C /usr/bin -zxf $gcf_file
   export PATH=$cache/gcf:$PATH
   rm -f $gcf_file
   #Symlink gcf to cf for old experiment libraries
